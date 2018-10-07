@@ -57,14 +57,24 @@
     afterEach(() => comboBox.opened = false);
 
     describe('when combo-box is attached', () => {
-      it('should contain appropriate aria attributes', () => {
-        expect(getNativeInput().getAttribute('role')).to.equal('combobox');
+      const assertAriaAttributes = () => {
         expect(getNativeInput().getAttribute('aria-autocomplete')).to.equal('list');
         expect(getNativeInput().hasAttribute('aria-labelledby')).to.be.true;
         expect(getToggleIcon().getAttribute('role')).to.equal('button');
         expect(getToggleIcon().getAttribute('aria-label')).to.equal('Toggle');
         expect(getClearIcon().getAttribute('role')).to.equal('button');
         expect(getClearIcon().getAttribute('aria-label')).to.equal('Clear');
+      };
+
+      it('should contain appropriate aria attributes', () => {
+        expect(getNativeInput().getAttribute('role')).to.equal('combobox');
+        assertAriaAttributes();
+      });
+
+      it('should contain appropriate aria attributes for readonly input', () => {
+        comboBox.readonly = true;
+        expect(getNativeInput().getAttribute('role')).to.equal(null);
+        assertAriaAttributes();
       });
     });
 

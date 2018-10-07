@@ -350,7 +350,8 @@ This program is available under Apache License Version 2.0, available at https:/
 
             readonly: {
               type: Boolean,
-              value: false
+              value: false,
+              observer: '_readonlyChanged'
             }
           };
         }
@@ -378,7 +379,7 @@ This program is available under Apache License Version 2.0, available at https:/
           this._toggleElement = this.$.toggleButton;
           this._clearElement = this.$.clearButton;
 
-          this._nativeInput.setAttribute('role', 'combobox');
+          this._updateNativeInputRole();
           this._nativeInput.setAttribute('aria-autocomplete', 'list');
           this._updateAriaExpanded();
         }
@@ -393,15 +394,33 @@ This program is available under Apache License Version 2.0, available at https:/
           this._restoreInputBlur();
         }
 
+        _updateNativeInputRole() {
+          if (this._nativeInput) {
+            this.readonly ?
+              this._nativeInput.removeAttribute('role') :
+              this._nativeInput.setAttribute('role', 'combobox');
+          }
+        }
+
         _getPositionTarget() {
           return this.$.input;
         }
 
         _updateAriaExpanded() {
           if (this._nativeInput) {
-            this._nativeInput.setAttribute('aria-expanded', this.opened);
-            this._toggleElement.setAttribute('aria-expanded', this.opened);
+            if (this.readonly) {
+              this._nativeInput.removeAttribute('aria-expanded');
+              this._toggleElement.removeAttribute('aria-expanded');
+            } else {
+              this._nativeInput.setAttribute('aria-expanded', this.opened);
+              this._toggleElement.setAttribute('aria-expanded', this.opened);
+            }
           }
+        }
+
+        _readonlyChanged() {
+          this._updateNativeInputRole();
+          this._updateAriaExpanded();
         }
 
         get inputElement() {
